@@ -79,6 +79,15 @@ namespace DevIO.Api.Controllers
             return CustomResponse(produtoViewModel);
         }
 
+        public async Task<ActionResult> Atualizar(Guid id, ProdutoViewModel produtoViewModel)
+        {
+            if(id != produtoViewModel.Id)
+            {
+                NotificarError("O id informado não é o mesmo que foi passado na query");
+                return CustomResponse(fornecedorViewModel);
+            }
+        }
+
         private bool UploadArquivo(string arquivo, string imgNome)
         {
             var imageDataByteArray = Convert.FromBase64String(arquivo);
