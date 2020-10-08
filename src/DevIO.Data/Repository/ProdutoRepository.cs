@@ -29,5 +29,10 @@ namespace DevIO.Data.Repository
         {
             return await Buscar(p => p.FornecedorId == fornecedorId);
         }
+
+        public async Task<bool> VerificarSeProdutoExiste(Guid id)
+        {
+            return Buscar(p => p.Id == id).Result.Any();
+        }
     }
 }

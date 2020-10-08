@@ -32,33 +32,19 @@ namespace DevIO.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // adiciona configuração para automapper
+            // Não esquecer de instalar o automapper antes c o comando: 'install-package AutoMapper.Extensions.Microsoft.DependencyInjection'
             services.AddAutoMapper(typeof(Startup));
 
             // adiciona configuração de conexão ao banco de dados
-            services.AddDbContext<MeuDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<MeuDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddControllers();
 
             // adiciona arquivo responsavel pelas injeções de independencias
             services.ResolveDependencies();
 
-            // adiciona compatibilidade da versão
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            // configura o api para retornar apenas mensagens de validações customizadas
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
-
-
-            services.AddMvc(option => option.EnableEndpointRouting = false)
-              .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-              .AddNewtonsoftJson(opt => {
-                  opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                  opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
-              });
-
+            // arquivo q contem configurações do MVC
+            services.WebApiConfig();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,16 +55,8 @@ namespace DevIO.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            // arquivo q contem configurações customizadas
+            app.UseMvcConfiguration();
         }
     }
 }

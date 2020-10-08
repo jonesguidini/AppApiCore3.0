@@ -34,6 +34,13 @@ namespace DevIO.Data.Context
             base.OnModelCreating(modelBuilder);
         }
 
+        // *adicional extra (fonte externa do curso): este recurso
+        // https://medium.com/@wilsonsantos_66971/entity-framework-enablesensitivedatalogging-72a79639820b
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity.GetType().GetProperty("DataCadastro") != null))

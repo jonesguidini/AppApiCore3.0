@@ -897,3 +897,4 @@ yarn-error.log
 # End of https://www.gitignore.io/api/vue,node,vuejs,react,csharp,angular,composer,aspnetcore,visualstudio,jetbrains+all,visualstudiocode
 /IPEA.COBRADI.Application/Properties
 **/**/appsettings.Development.*
+/src/DevIO.Api/wwwroot/imagens
