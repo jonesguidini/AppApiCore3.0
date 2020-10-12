@@ -7,11 +7,13 @@ using AutoMapper;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevIO.Api.Controllers
 {
+    [Authorize]
     [Route("api/produtos")]
     [ApiController]
     public class ProdutosController : MainController
@@ -23,7 +25,8 @@ namespace DevIO.Api.Controllers
         public ProdutosController(IMapper mapper,
             IProdutoService produtoService,
             IProdutoRepository produtoRepository,
-            INotificador notificador) : base(notificador)
+            INotificador notificador,
+            IUser user) : base(notificador, user)
         {
             _mapper = mapper;
             _produtoService = produtoService;

@@ -38,6 +38,9 @@ namespace DevIO.Api
             // adiciona configuração de conexão ao banco de dados
             services.AddDbContext<MeuDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            // adiciona arquivo customizado responsavel por configurar as Authorizations
+            services.AddIdentityConfiguration(Configuration);
+
             services.AddControllers();
 
             // adiciona arquivo responsavel pelas injeções de independencias
@@ -52,10 +55,20 @@ namespace DevIO.Api
         {
             if (env.IsDevelopment())
             {
+                app.UseCors("Desenvolvimento");
                 app.UseDeveloperExceptionPage();
+            }else
+            {
+                app.UseCors("Production");
+                app.UseHsts();
             }
 
+            // Configura autenticação
+            // Obs: tem q vir antes da config do MVC
+            app.UseAuthentication();
+
             // arquivo q contem configurações customizadas
+            // este recurso deve ser o último a ser chamado
             app.UseMvcConfiguration();
         }
     }

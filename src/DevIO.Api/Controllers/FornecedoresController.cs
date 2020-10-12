@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DevIO.Api.Extensions;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevIO.Api.Controllers
 {
+    [Authorize]
     [Route("api/fornecedores")]
     public class FornecedorController : MainController
     {
@@ -23,7 +26,8 @@ namespace DevIO.Api.Controllers
             IFornecedorRepository fornecedorRepository, 
             IFornecedorService fornecedorService, 
             INotificador notificador, 
-            IEnderecoRepository enderecoRepository) : base(notificador)
+            IEnderecoRepository enderecoRepository,
+            IUser user) : base(notificador, user)
         {
             _mapper = mapper;
             _fornecedorRepository = fornecedorRepository;
@@ -31,6 +35,7 @@ namespace DevIO.Api.Controllers
             _enderecoRepository = enderecoRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<FornecedorViewModel>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<FornecedorViewModel>>> ObterTodos()
@@ -60,18 +65,17 @@ namespace DevIO.Api.Controllers
             return enderecoViewModel;
         }
 
-        [NonAction]
-        public async Task<FornecedorViewModel> ObterFornecedorProdutoIndereco(Guid id)
+        private async Task<FornecedorViewModel> ObterFornecedorProdutoIndereco(Guid id)
         {
             return _mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorProdutosEndereco(id));
         }
 
-        [NonAction]
-        public async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
+        private async Task<FornecedorViewModel> ObterFornecedorEndereco(Guid id)
         {
             return _mapper.Map<FornecedorViewModel>(await _fornecedorRepository.ObterFornecedorEndereco(id));
         }
 
+        [ClaimsAuthorize("Fornecedor", "Adicionar")]
         [HttpPost]
         [ProducesResponseType(typeof(FornecedorViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -86,7 +90,7 @@ namespace DevIO.Api.Controllers
             return CustomResponse(fornecedorViewModel);
         }
 
-
+        [ClaimsAuthorize("Fornecedor", "Atualizar")]
         [HttpPut("{id:guid}")]
         [ProducesResponseType(typeof(FornecedorViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,6 +109,7 @@ namespace DevIO.Api.Controllers
             return CustomResponse(fornecedorViewModel);
         }
 
+        [ClaimsAuthorize("Fornecedor", "Atualizar")]
         [HttpPut("atualizar-endereco/{id:guid}")]
         [ProducesResponseType(typeof(EnderecoViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -123,6 +128,7 @@ namespace DevIO.Api.Controllers
             return CustomResponse(enderecoViewModel);
         }
 
+        [ClaimsAuthorize("Fornecedor", "Excluir")]
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(FornecedorViewModel), StatusCodes.Status200OK)]
