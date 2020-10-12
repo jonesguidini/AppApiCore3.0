@@ -1,4 +1,5 @@
-﻿using DevIO.Api.Extensions;
+﻿using DevIO.Api.Controllers;
+using DevIO.Api.Extensions;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
 using Microsoft.AspNetCore.Identity;
@@ -13,9 +14,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevIO.Api.Controllers
+namespace DevIO.Api.V1.Controllers
 {
-    [Route("api")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}")]
     public class AuthController : MainController
     {
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -50,7 +52,7 @@ namespace DevIO.Api.Controllers
 
             // se não houve problema com o cadastro do usuário
             // já faz login do usuário cadastrado
-            if(result.Succeeded) 
+            if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
                 return CustomResponse(await GerarJwt(user.Email));
@@ -95,7 +97,7 @@ namespace DevIO.Api.Controllers
                 Audience = _appSettings.ValidoEm,
                 Subject = identityClaims, // passa as claims customizadas
                 Expires = DateTime.UtcNow.AddHours(_appSettings.ExpiracaoHoras),
-                SigningCredentials = new SigningCredentials( new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(securityTokenDescriptor);
@@ -122,8 +124,8 @@ namespace DevIO.Api.Controllers
             return response;
         }
 
-        public static long ToUnixEpochDate(DateTime date) 
-            => (long)Math.Round((date.ToUniversalTime() -  new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
+        public static long ToUnixEpochDate(DateTime date)
+            => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
 
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginUserViewModel loginUser)
@@ -131,7 +133,7 @@ namespace DevIO.Api.Controllers
             if (!ModelState.IsValid) return CustomResponse(ModelState);
             var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, true);
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 return CustomResponse(await GerarJwt(loginUser.Email));
             }

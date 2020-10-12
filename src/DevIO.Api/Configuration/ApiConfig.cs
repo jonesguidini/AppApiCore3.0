@@ -18,6 +18,21 @@ namespace DevIO.Api.Configuration
             // adiciona compatibilidade da versão
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
+            // CONFIGURAÇÕES DE VERSIONAMENTO DA API -------
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true; //quando não tiver versão especificada assume a versão default
+                options.DefaultApiVersion = new ApiVersion(1, 0); // pode usar 3 numeros ou 1 numero dependendo do padrão de versionamento
+                options.ReportApiVersions = true; // retorna informe da versão da api no header
+            });
+
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV"; // 'v' + 'Major Version', 'Minor Version', 'Patch'
+                options.SubstituteApiVersionInUrl = true;
+            });
+            //-------------------------------------------------
+
             // configura o api para retornar apenas mensagens de validações customizadas
             services.Configure<ApiBehaviorOptions>(options =>
             {

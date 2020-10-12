@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DevIO.Api.Controllers;
 using DevIO.Api.Extensions;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
@@ -10,10 +11,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DevIO.Api.Controllers
+namespace DevIO.Api.V1.Controllers
 {
     [Authorize]
-    [Route("api/fornecedores")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/fornecedores")]
     public class FornecedorController : MainController
     {
 
@@ -22,10 +24,10 @@ namespace DevIO.Api.Controllers
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly IMapper _mapper;
 
-        public FornecedorController(IMapper mapper, 
-            IFornecedorRepository fornecedorRepository, 
-            IFornecedorService fornecedorService, 
-            INotificador notificador, 
+        public FornecedorController(IMapper mapper,
+            IFornecedorRepository fornecedorRepository,
+            IFornecedorService fornecedorService,
+            INotificador notificador,
             IEnderecoRepository enderecoRepository,
             IUser user) : base(notificador, user)
         {
@@ -83,7 +85,7 @@ namespace DevIO.Api.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-           var result = await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorViewModel));
+            var result = await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorViewModel));
 
             if (!result) return BadRequest();
 

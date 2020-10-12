@@ -1,21 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using DevIO.Api.Configuration;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using System;
 
 namespace DevIO.Api
 {
@@ -48,16 +42,21 @@ namespace DevIO.Api
 
             // arquivo q contem configurações do MVC
             services.WebApiConfig();
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerConfig();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
                 app.UseCors("Desenvolvimento");
                 app.UseDeveloperExceptionPage();
-            }else
+            }
+            else
             {
                 app.UseCors("Production");
                 app.UseHsts();
@@ -70,6 +69,10 @@ namespace DevIO.Api
             // arquivo q contem configurações customizadas
             // este recurso deve ser o último a ser chamado
             app.UseMvcConfiguration();
+
+            // habilita o Swagger
+            app.UseSwaggerConfig(provider);
+
         }
     }
 }
